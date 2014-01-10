@@ -11,6 +11,13 @@ get_dist()
 		fi
 	fi
 
+	if [ -f /etc/SuSE-release ]; then
+		if grep -q ^openSUSE /etc/SuSE-release ; then
+			echo openSUSE
+			return
+		fi
+	fi
+
 	echo unknown
 }
 
@@ -78,6 +85,12 @@ gather_sw_info()
 			rpm -qa         > "$SWD"/rpm-qa.txt
 			yum repolist -v > "$SWD"/yum_repolist-v.txt
 			yum history     > "$SWD"/yum_history.txt
+			;;
+		openSUSE)
+			cp /etc/SuSE-release "$SWD"
+
+			rpm -qa		> "$SWD"/rpm-qa.txt
+			zypper lr -d	> "$SWD"/zypper_repositories.txt
 			;;
 	esac
 }

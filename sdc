@@ -88,6 +88,10 @@ gather_sw_info()
 	fi
 
 	case $(get_dist) in
+		debian)
+			apt-get check   > "$SWD"/apt-get_check.txt
+			dpkg -l         > "$SWD"/dpkg-l.txt
+			;;
 		fedora)
 			cp /etc/system-release "$SWD"
 

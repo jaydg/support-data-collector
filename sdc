@@ -5,15 +5,20 @@ LANG=C
 
 get_dist()
 {
+	if [ -f /etc/os-release ]; then
+		. /etc/os-release
+		echo "$ID" ; return
+	fi
+
 	if [ -f /etc/system-release ]; then
 		if grep -q ^Fedora /etc/system-release ; then
-			echo Fedora ; return
+			echo fedora ; return
 		fi
 	fi
 
 	if [ -f /etc/SuSE-release ]; then
 		if grep -q ^openSUSE /etc/SuSE-release ; then
-			echo openSUSE
+			echo opensuse
 			return
 		fi
 	fi
@@ -78,15 +83,19 @@ gather_sw_info()
 	local SWD="${TMPDIR}/sw"
 	mkdir "$SWD"
 
+	if [ -f /etc/os-release ]; then
+		cp /etc/os-release "$SWD"
+	fi
+
 	case $(get_dist) in
-		Fedora)
+		fedora)
 			cp /etc/system-release "$SWD"
 
 			rpm -qa         > "$SWD"/rpm-qa.txt
 			yum repolist -v > "$SWD"/yum_repolist-v.txt
 			yum history     > "$SWD"/yum_history.txt
 			;;
-		openSUSE)
+		opensuse)
 			cp /etc/SuSE-release "$SWD"
 
 			rpm -qa		> "$SWD"/rpm-qa.txt

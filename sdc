@@ -26,6 +26,14 @@ get_dist()
 	echo unknown
 }
 
+get_dist_version_id()
+{
+	if [ -f /etc/os-release ]; then
+		. /etc/os-release
+		echo "$VERSION_ID"
+	fi
+}
+
 gather_x11_info()
 {
 	local X11D="${TMPDIR}/x11"
@@ -93,11 +101,21 @@ gather_sw_info()
 			dpkg -l         > "$SWD"/dpkg-l.txt
 			;;
 		fedora)
+			local -i _FEDORA_RELEASE
+			local _PKGMGR
+
+			_FEDORA_RELEASE=$(get_dist_version_id)
+			if [ "$_FEDORA_RELEASE" -ge 22 ] ; then
+				_PKGMGR="dnf"
+			else
+				_PKGMGR="yum"
+			fi
+
 			cp /etc/system-release "$SWD"
 
 			rpm -qa         > "$SWD"/rpm-qa.txt
-			yum repolist -v > "$SWD"/yum_repolist-v.txt
-			yum history     > "$SWD"/yum_history.txt
+			$_PKGMGR repolist -v > "${SWD}/${_PKGMGR}_repolist-v.txt"
+			$_PKGMGR history     > "${SWD}/${_PKGMGR}_history.txt"
 			;;
 		opensuse)
 			cp /etc/SuSE-release "$SWD"

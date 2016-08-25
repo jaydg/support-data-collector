@@ -122,29 +122,34 @@ gather_kernel_info()
 	dmesg     > "$KD"/dmesg.txt
 }
 
+collect_and_package()
+{
+	TMPDIR=$(mktemp -d)
+
+	echo "Gathering system information; please wait..."
+	echo
+	echo -n "  Kernel:   " ; gather_kernel_info ; echo "done."
+	echo -n "  Hardware: " ; gather_hw_info     ; echo "done."
+	echo -n "  Software: " ; gather_sw_info     ; echo "done."
+	echo -n "  Network:  " ; gather_nw_info     ; echo "done."
+	echo -n "  X11:      " ; gather_x11_info    ; echo "done."
+
+	cd "$TMPDIR"
+	FILENAME="/tmp/hdu-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
+
+	cd "$TMPDIR"
+
+	tar cjf "$FILENAME" .
+	echo
+	echo "Diagnose stored in $FILENAME"
+
+	cd - > /dev/null
+	rm -rf "$TMPDIR"
+}
+
 if [[ $(id -u) != 0 ]]; then
 	echo "This script must be run as root!"
 	exit 1
 fi
 
-TMPDIR=$(mktemp -d)
-
-echo "Gathering system information; please wait..."
-echo
-echo -n "  Kernel:   " ; gather_kernel_info ; echo "done."
-echo -n "  Hardware: " ; gather_hw_info     ; echo "done."
-echo -n "  Software: " ; gather_sw_info     ; echo "done."
-echo -n "  Network:  " ; gather_nw_info     ; echo "done."
-echo -n "  X11:      " ; gather_x11_info    ; echo "done."
-
-cd "$TMPDIR"
-FILENAME="/tmp/hdu-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
-
-cd "$TMPDIR"
-
-tar cjf "$FILENAME" .
-echo
-echo "Diagnose stored in $FILENAME"
-
-cd - > /dev/null
-rm -rf "$TMPDIR"
+collect_and_package

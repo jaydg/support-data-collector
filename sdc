@@ -153,7 +153,7 @@ collect_and_package()
 	echo -n "  X11:      " ; gather_x11_info    ; echo "done."
 
 	cd "$TMPDIR"
-	FILENAME="/tmp/hdu-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
+	FILENAME="/tmp/sdc-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
 
 	cd "$TMPDIR"
 

@@ -96,7 +96,7 @@ gather_sw_info()
 	fi
 
 	case $(get_dist) in
-		debian)
+		debian|ubuntu)
 			apt-get check   > "$SWD"/apt-get_check.txt
 			dpkg -l         > "$SWD"/dpkg-l.txt
 			;;

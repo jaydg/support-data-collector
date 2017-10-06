@@ -159,12 +159,20 @@ collect_and_package()
 	echo -n "  Network:  " ; gather_nw_info     ; echo "done."
 	echo -n "  X11:      " ; gather_x11_info    ; echo "done."
 
-	cd "$TMPDIR"
-	FILENAME="/tmp/sdc-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
+	if [ -n "$SUDO_USER" ] ; then
+		TARGET_DIR="$(eval echo ~${SUDO_USER})"
+	else
+		TARGET_DIR="$HOME"
+	fi
+
+	FILENAME="${TARGET_DIR}/sdc-$(hostname -s)-$(date "+%Y-%m-%d_%H:%M").tar.bz2"
 
 	cd "$TMPDIR"
 
 	tar cjf "$FILENAME" .
+	if [ -n "$SUDO_USER" ] ;  then
+		chown "$SUDO_USER": "$FILENAME"
+	fi
 	echo
 	echo "Diagnose stored in $FILENAME"
 

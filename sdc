@@ -61,6 +61,7 @@ gather_x11_info()
 	$RUNAS glxinfo            > "$X11D"/glxinfo.txt            2>&1
 	$RUNAS xdriinfo           > "$X11D"/xdriinfo.txt           2>&1
 	$RUNAS xvinfo             > "$X11D"/xvinfo.txt             2>&1
+	$RUNAS xrandr --verbose   > "$X11D"/xrandr.txt             2>&1
 }
 
 gather_hw_info()

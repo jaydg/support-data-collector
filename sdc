@@ -101,6 +101,13 @@ gather_sw_info()
 		cp /etc/os-release "$SWD"
 	fi
 
+	if [ -x /usr/bin/systemctl ] ; then
+		/usr/bin/systemctl --all > "$SWD"/systemctl.txt
+		/usr/bin/systemctl status > "$SWD"/systemctl-status.txt
+		/usr/bin/systemctl list-unit-files > "$SWD"/systemctl-unit-files.txt
+		/usr/bin/systemctl show > "$SWD"/systemctl-show.txt
+	fi
+
 	case $(get_dist) in
 		debian|ubuntu)
 			apt-config dump > "$SWD"/apt-config.txt

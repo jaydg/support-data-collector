@@ -46,15 +46,21 @@ gather_x11_info()
 		return
 	fi
 
-	xdpyinfo           > "$X11D"/xdpyinfo.txt           2>&1
-	xmodmap -pm        > "$X11D"/xmodmap-pm.txt         2>&1
-	xmodmap -pk        > "$X11D"/xmodmap-pk.txt         2>&1
-	xinput list --long > "$X11D"/xinput_list--long.txt  2>&1
-	xlsfonts -l        > "$X11D"/xlsfonts-l.txt         2>&1
-	xlsfonts -ll       > "$X11D"/xlsfonts-ll.txt        2>&1
-	glxinfo            > "$X11D"/glxinfo.txt            2>&1
-	xdriinfo           > "$X11D"/xdriinfo.txt           2>&1
-	xvinfo             > "$X11D"/xvinfo.txt             2>&1
+	# When running with sudo call tools using the logged-in user
+	local SUDO=""
+	if [ -n "$SUDO_USER" ] ; then
+		RUNAS="sudo -u ${SUDO_USER}"
+	fi
+
+	$RUNAS xdpyinfo           > "$X11D"/xdpyinfo.txt           2>&1
+	$RUNAS xmodmap -pm        > "$X11D"/xmodmap-pm.txt         2>&1
+	$RUNAS xmodmap -pk        > "$X11D"/xmodmap-pk.txt         2>&1
+	$RUNAS xinput list --long > "$X11D"/xinput_list--long.txt  2>&1
+	$RUNAS xlsfonts -l        > "$X11D"/xlsfonts-l.txt         2>&1
+	$RUNAS xlsfonts -ll       > "$X11D"/xlsfonts-ll.txt        2>&1
+	$RUNAS glxinfo            > "$X11D"/glxinfo.txt            2>&1
+	$RUNAS xdriinfo           > "$X11D"/xdriinfo.txt           2>&1
+	$RUNAS xvinfo             > "$X11D"/xvinfo.txt             2>&1
 }
 
 gather_hw_info()

@@ -63,7 +63,7 @@ gather_x11_info()
 
 	# Ensure the X server is reachable
 	if [ -z "$DISPLAY" ]; then
-		return
+		return 1
 	fi
 
 	# When running with sudo call tools using the logged-in user

@@ -34,6 +34,26 @@ get_dist_version_id()
 	fi
 }
 
+gather_docker_info()
+{
+	if [ ! -x /usr/bin/docker ] ; then
+		return 1
+	fi
+
+	local DOCKERD="${TMPDIR}/docker"
+	mkdir "$DOCKERD"
+
+	/usr/bin/docker version    > "$DOCKERD"/docker-version.txt
+	/usr/bin/docker info       > "$DOCKERD"/docker-info.txt
+	/usr/bin/docker images     > "$DOCKERD"/docker-images.txt
+	/usr/bin/docker ps -a      > "$DOCKERD"/docker-ps-a.txt
+	/usr/bin/docker network ls > "$DOCKERD"/docker-networks.txt
+	for NET_ID in $(/usr/bin/docker network ls -q) ; do
+		echo >> "$DOCKERD"/docker-networks.txt
+		/usr/bin/docker network inspect "$NET_ID" >> "$DOCKERD"/docker-networks.txt
+	done
+}
+
 gather_x11_info()
 {
 	local X11D="${TMPDIR}/x11"
@@ -161,11 +181,12 @@ collect_and_package()
 
 	echo "Gathering system information; please wait..."
 	echo
-	echo -n "  Kernel:   " ; gather_kernel_info ; echo "done."
-	echo -n "  Hardware: " ; gather_hw_info     ; echo "done."
-	echo -n "  Software: " ; gather_sw_info     ; echo "done."
-	echo -n "  Network:  " ; gather_nw_info     ; echo "done."
-	echo -n "  X11:      " ; gather_x11_info    ; echo "done."
+	echo -n "  Kernel:   " ; gather_kernel_info && echo "done." || echo "skipped."
+	echo -n "  Hardware: " ; gather_hw_info     && echo "done." || echo "skipped."
+	echo -n "  Software: " ; gather_sw_info     && echo "done." || echo "skipped."
+	echo -n "  Docker:   " ; gather_docker_info && echo "done." || echo "skipped."
+	echo -n "  Network:  " ; gather_nw_info     && echo "done." || echo "skipped."
+	echo -n "  X11:      " ; gather_x11_info    && echo "done." || echo "skipped."
 
 	if [ -n "$SUDO_USER" ] ; then
 		TARGET_DIR="$(eval echo ~${SUDO_USER})"

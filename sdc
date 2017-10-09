@@ -171,7 +171,7 @@ gather_kernel_info()
 
 	uname -a  > "$KD"/uname-a.txt
 	lsmod     > "$KD"/lsmod.txt
-	sysctl -a > "$KD"/sysctl-a.txt
+	sysctl -a > "$KD"/sysctl-a.txt 2> /dev/null
 	dmesg     > "$KD"/dmesg.txt
 }
 

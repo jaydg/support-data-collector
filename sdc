@@ -122,13 +122,6 @@ gather_sw_info()
 		cp /etc/os-release "$SWD"
 	fi
 
-	if [ -x /usr/bin/systemctl ] ; then
-		/usr/bin/systemctl --all > "$SWD"/systemctl.txt
-		/usr/bin/systemctl status > "$SWD"/systemctl-status.txt
-		/usr/bin/systemctl list-unit-files > "$SWD"/systemctl-unit-files.txt
-		/usr/bin/systemctl show > "$SWD"/systemctl-show.txt
-	fi
-
 	case $(get_dist) in
 		debian|ubuntu)
 			apt-config dump > "$SWD"/apt-config.txt
@@ -161,6 +154,26 @@ gather_sw_info()
 	esac
 }
 
+gather_service_info()
+{
+	local SVCD="${TMPDIR}/services"
+	mkdir "$SVCD"
+
+	# systemd
+	if [ -x /usr/bin/systemctl ] ; then
+		/usr/bin/systemctl --all           > "$SVCD"/systemctl.txt
+		/usr/bin/systemctl status          > "$SVCD"/systemctl-status.txt
+		/usr/bin/systemctl list-unit-files > "$SVCD"/systemctl-unit-files.txt
+		/usr/bin/systemctl show            > "$SVCD"/systemctl-show.txt
+	fi
+
+	# Upstart
+	if [ -x /sbin/initctl ] ; then
+		/sbin/initctl version > "$SVCD"/initctl-version.txt
+		/sbin/initctl list > "$SVCD"/initctl-list.txt
+	fi
+}
+
 gather_kernel_info()
 {
 	local KD="${TMPDIR}/kernel"
@@ -181,12 +194,13 @@ collect_and_package()
 
 	echo "Gathering system information; please wait..."
 	echo
-	echo -n "  Kernel:   " ; gather_kernel_info && echo "done." || echo "skipped."
-	echo -n "  Hardware: " ; gather_hw_info     && echo "done." || echo "skipped."
-	echo -n "  Software: " ; gather_sw_info     && echo "done." || echo "skipped."
-	echo -n "  Docker:   " ; gather_docker_info && echo "done." || echo "skipped."
-	echo -n "  Network:  " ; gather_nw_info     && echo "done." || echo "skipped."
-	echo -n "  X11:      " ; gather_x11_info    && echo "done." || echo "skipped."
+	echo -n "  Kernel:   " ; gather_kernel_info  && echo "done." || echo "skipped."
+	echo -n "  Hardware: " ; gather_hw_info      && echo "done." || echo "skipped."
+	echo -n "  Software: " ; gather_sw_info      && echo "done." || echo "skipped."
+	echo -n "  Services: " ; gather_service_info && echo "done." || echo "skipped."
+	echo -n "  Docker:   " ; gather_docker_info  && echo "done." || echo "skipped."
+	echo -n "  Network:  " ; gather_nw_info      && echo "done." || echo "skipped."
+	echo -n "  X11:      " ; gather_x11_info     && echo "done." || echo "skipped."
 
 	if [ -n "$SUDO_USER" ] ; then
 		TARGET_DIR="$(eval echo ~${SUDO_USER})"

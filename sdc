@@ -43,11 +43,11 @@ gather_docker_info()
 	local DOCKERD="${TMPDIR}/docker"
 	mkdir "$DOCKERD"
 
-	/usr/bin/docker version    > "$DOCKERD"/docker-version.txt
-	/usr/bin/docker info       > "$DOCKERD"/docker-info.txt
-	/usr/bin/docker images     > "$DOCKERD"/docker-images.txt
-	/usr/bin/docker ps -a      > "$DOCKERD"/docker-ps-a.txt
-	/usr/bin/docker network ls > "$DOCKERD"/docker-networks.txt
+	/usr/bin/docker version    > "$DOCKERD"/docker-version.txt  2>&1
+	/usr/bin/docker info       > "$DOCKERD"/docker-info.txt     2>&1
+	/usr/bin/docker images     > "$DOCKERD"/docker-images.txt   2>&1
+	/usr/bin/docker ps -a      > "$DOCKERD"/docker-ps-a.txt     2>&1
+	/usr/bin/docker network ls > "$DOCKERD"/docker-networks.txt 2>&1
 	for NET_ID in $(/usr/bin/docker network ls -q) ; do
 		echo >> "$DOCKERD"/docker-networks.txt
 		/usr/bin/docker network inspect "$NET_ID" >> "$DOCKERD"/docker-networks.txt

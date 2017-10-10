@@ -56,18 +56,18 @@ gather_docker_info()
 
 gather_x11_info()
 {
-	local X11D="${TMPDIR}/x11"
-	mkdir "$X11D"
-
-	cp /var/log/Xorg.0.log "$X11D" 2> /dev/null
-
 	# Ensure the X server is reachable
 	if [ -z "$DISPLAY" ]; then
 		return 1
 	fi
 
+	local X11D="${TMPDIR}/x11"
+	mkdir "$X11D"
+
+	cp /var/log/Xorg.0.log "$X11D" 2> /dev/null
+
 	# When running with sudo call tools using the logged-in user
-	local SUDO=""
+	local RUNAS=""
 	if [ -n "$SUDO_USER" ] ; then
 		RUNAS="sudo -u ${SUDO_USER}"
 	fi
